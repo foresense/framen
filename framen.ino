@@ -5,8 +5,8 @@ by Robert Beenen
 
 	MOD1:	1-15 -> amen slice
 			16 -> random sample
-	MOD2:	0-50% -> play from start to 0-100%
-			51-100% -> loop starts at 0-100% to end
+	MOD2:	0-50% -> play from start to 1-100%
+			51-100% -> loop starts at 0-99% to end
 	KNOB3:	0-100% -> pitch -1 oct to +1 oct
 	INPUT3:	trigger input
 
@@ -43,12 +43,11 @@ bool triggered;
 bool looping;
 
 uint8_t seed = 1;
-uint8_t xorshift(void) {
+void xorshift(void) {
 	if(!seed) seed++;
 	seed ^= (seed << 7);
     seed ^= (seed >> 5);
 	seed ^= (seed << 3);
-	return seed;
 }
 
 void setup() {
@@ -83,7 +82,7 @@ void loop() {
 	input3 = digitalRead(INPUT3_PIN);		// using digital read on an analog input works
 
 	if(mod1 == 0x0F) {
-		mod1 = map(xorshift(), 0, 255, 0, 14);	// use a randomizer when mod1 is at max value
+		mod1 = map(seed, 0, 255, 0, 14);	// use the random value when mod1 is at max value
 	}
 	offset = slice_start[mod1];
 
@@ -103,6 +102,7 @@ void loop() {
 
 ISR(TIMER1_COMPA_vect) {
 	if(input3 && !triggered) {
+		xorshift();		// update to another random number on trigger
 		index = 0;
 		playing = true;
 		triggered = true;
