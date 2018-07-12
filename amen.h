@@ -1,7 +1,7 @@
 // amen.h
 #define SAMPLERATE	8000
 #define SAMPLESIZE	0x6C00
-#define GRAINSIZE	27 // 0x6C00 >> 10 = 27
+#define GRAINSIZE	27 // 0x6C00 >> 10
 
 const uint16_t slice_start[15] = {
 	0, 1740, 3468, 5280, 6995, 8604, 10433, 12081, 13907, 15584, 17246, 19090, 20805, 22411, 25842

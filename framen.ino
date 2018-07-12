@@ -3,35 +3,16 @@
 FRAMEN v2.0
 by Robert Beenen
 
-	MOD1:	Sample Start (0-31)
-	MOD2:	Loop Size	(0-1023) -- closer to 1023 more bits get used
-	KNOB3:	Pitch
-	INPUT3:	Sample Trigger
+	MOD1:	1-15 -> amen slice
+			16 -> random sample
+	MOD2:	0-50% -> play from start to 0-100%
+			51-100% -> loop starts at 0-100% to end
+	KNOB3:	0-100% -> pitch -1 oct to +1 oct
+	INPUT3:	trigger input
 
-	loop:
-
-		mod2 -> 0-1023
-		0-511: No looping, cut off sample (center = whole sample)
-			   Play from start to 511 = end
-		512-1023: Looping playback from end (center = loop whole sample)
-				  Loop start moves to the back (right most = tiny loop)
-
-	               non looping portion
-	0b0000000001 - (1) * 2 * 27
-	0b0000100000 - 27 << 6 == 1728 (average loop length)
-	0b0001000000 - 27 << 7 == 3456 (2x)
-	0b0010000000 - 27 << 8 == 6912 (4x)
-	0b0100000000 - 27 << 9 == 13824 (8x)
-	               looping portion
-	0b1000000000 - 512 (8x average loop length)
-	0b1000000001 -  4x loop
+	Just play around with it, it's pretty straight forward.
 
 	*/
-
-
-// mod1 == 16 -> pick a random offset between 0-14
-//
-// do a fade out on the last few samples if (mod2 < 512)
 
 #include "amen.h"
 
@@ -39,10 +20,10 @@ by Robert Beenen
 #define MOD2_PIN	A1		// KNOB2 / INPUT2
 #define KNOB3_PIN	A0		// KNOB3
 #define INPUT3_PIN	A3		// INPUT3
-#define OUT_PIN	11
+#define OUT_PIN		11
 
 #define SAMPLERATE	8000
-#define UPDATERATE	2000	// (F_CPU / SAMPLERATE)
+#define UPDATERATE	(F_CPU / SAMPLERATE)
 #define SILENCE		0x80
 
 // inputs
@@ -88,7 +69,9 @@ void setup() {
     TCCR1B = (TCCR1B & ~_BV(WGM13)) | _BV(WGM12);	// CTC mode (p.133)
     TCCR1A = TCCR1A & ~(_BV(WGM11) | _BV(WGM10));
     TCCR1B = (TCCR1B & ~(_BV(CS12) | _BV(CS11))) | _BV(CS10);	// no prescaler
-    OCR1A = F_CPU / SAMPLERATE;
+    
+    OCR1A = UPDATERATE;
+    
     TIMSK1 |= _BV(OCIE1A);		// enable interrupt when TCNT1 == OCR1A (p.136)
     sei();
 }
