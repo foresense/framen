@@ -53,9 +53,7 @@ uint8_t input3;
 
 // internal
 uint16_t offset;
-uint16_t offset_p;
 uint16_t length;
-uint16_t length_p;
 uint16_t loop_start;
 uint16_t index;
 
@@ -64,11 +62,12 @@ bool triggered;
 bool looping;
 
 uint8_t seed = 1;
-void xorshift(void) {
-	if(!seed) seed ++;
+uint8_t xorshift(void) {
+	if(!seed) seed++;
 	seed ^= (seed << 7);
     seed ^= (seed >> 5);
 	seed ^= (seed << 3);
+	return seed;
 }
 
 void setup() {
@@ -95,12 +94,14 @@ void setup() {
 }
 
 void loop() {
-	mod1 = analogRead(MOD1_PIN) >> 6;
+	mod1 = analogRead(MOD1_PIN) >> 6;		// reduce to 4 bits
 	mod2 = analogRead(MOD2_PIN);
 	knob3 = analogRead(KNOB3_PIN);
-	input3 = digitalRead(INPUT3_PIN);
+	input3 = digitalRead(INPUT3_PIN);		// using digital read on an analog input works
 
-	if(mod1 == 0x0F) mod1--;
+	if(mod1 == 0x0F) {
+		mod1 = map(xorshift(), 0, 255, 0, 14);	// use a randomizer when mod1 is at max value
+	}
 	offset = slice_start[mod1];
 
 	if(mod2 & 0x200) {
@@ -137,7 +138,7 @@ ISR(TIMER1_COMPA_vect) {
 		}
 	}
 	else {
-		index ++;
+		index++;
 	}
 	
 	if(playing) {
