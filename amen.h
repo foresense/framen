@@ -8,7 +8,7 @@ const uint16_t slice_start[15] = {
 };	// kick, kick, snare, roll, roll, kick, hihat, snare, roll, roll, snare, roll, roll, kick-crash, snare, end
 
 const uint16_t slice_length[15] = {
-	1740, 1728, 1812, 1715, 1609, 1829, 1648, 1826, 1677, 1662, 1844, 1715, 1606, 3431, 1806
+	1739, 1727, 1811, 1714, 1608, 1828, 1647, 1825, 1676, 1661, 1843, 1714, 1605, 3430, 1805
 };
 const uint8_t sample_data[] PROGMEM = {
 	0x7e, 0x7d, 0x80, 0x89, 0x7a, 0x87, 0x85, 0x7e, 0x73, 0x8b, 0x80, 0x73, 0x85, 0x7c, 0x7c, 0x7a,

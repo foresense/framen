@@ -79,7 +79,6 @@ void loop() {
 	mod1 = analogRead(MOD1_PIN) >> 6;		// reduce to 4 bits
 	mod2 = analogRead(MOD2_PIN);
 	knob3 = analogRead(KNOB3_PIN);
-	input3 = digitalRead(INPUT3_PIN);		// using digital read on an analog input works
 
 	if(mod1 == 0x0F) {
 		mod1 = map(seed, 0, 255, 0, 14);	// use the random value when mod1 is at max value
@@ -101,6 +100,9 @@ void loop() {
 }
 
 ISR(TIMER1_COMPA_vect) {
+	
+	input3 = digitalRead(INPUT3_PIN);
+	
 	if(input3 && !triggered) {
 		xorshift();		// update to another random number on trigger
 		index = 0;
@@ -125,6 +127,6 @@ ISR(TIMER1_COMPA_vect) {
 	}
 	
 	if(playing) {
-		OCR2A = pgm_read_byte(&sample_data[(offset + index) % SAMPLESIZE]);
+		OCR2A = pgm_read_byte(&sample_data[(offset + index)]);
 	}
 }
